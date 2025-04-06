@@ -12,7 +12,7 @@ from io import BytesIO
 from PIL import Image
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "https://horizon-dash.vercel.app"}})
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 
 # Prevent TensorFlow from using all memory
