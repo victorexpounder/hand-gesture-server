@@ -1,0 +1,8 @@
+[phases.setup]
+aptPkgs = [
+  "libgl1",            # Needed by OpenCV for image decoding
+  "libglib2.0-0",      # Sometimes needed by Pillow
+  "libsm6",            # Additional OpenCV dependencies
+  "libxext6",          
+  "libxrender1"
+]
