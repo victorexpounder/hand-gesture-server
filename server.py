@@ -1,17 +1,17 @@
+import eventlet
+eventlet.monkey_patch()
+
 import cv2
 import mediapipe as mp
 import numpy as np
 import tensorflow as tf
 import base64
 import json
-import eventlet
 from flask import Flask
 from flask_socketio import SocketIO
 from flask_cors import CORS
 from io import BytesIO
 from PIL import Image
-
-eventlet.monkey_patch()
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -22,10 +22,12 @@ gpus = tf.config.experimental.list_physical_devices("GPU")
 if gpus:
     for gpu in gpus:
         tf.config.experimental.set_memory_growth(gpu, True)
-        
-# Load the trained model
-model = tf.keras.models.load_model("gesture_model.h5")
-GESTURES = ["handOpen", "ThumbsUp", "peace", "fuck", "handClose", "rock", "left", "right"]
+
+# Wrap model loading within app context
+with app.app_context():
+    # Load the trained model
+    model = tf.keras.models.load_model("gesture_model.h5")
+    GESTURES = ["handOpen", "ThumbsUp", "peace", "fuck", "handClose", "rock", "left", "right"]
 
 # Initialize Mediapipe Hands
 mp_hands = mp.solutions.hands
@@ -43,7 +45,6 @@ def preprocess_frame(frame):
     frame_rgb = cv2.convertScaleAbs(frame_rgb, alpha=1.2, beta=30)
 
     results = hands.process(frame_rgb)
-    
     
     if not results.multi_hand_landmarks:
         print("🔴 No hand detected")
