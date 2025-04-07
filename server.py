@@ -11,9 +11,11 @@ from flask_cors import CORS
 from io import BytesIO
 from PIL import Image
 
+eventlet.monkey_patch()
+
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Prevent TensorFlow from using all memory
 gpus = tf.config.experimental.list_physical_devices("GPU")
@@ -106,4 +108,4 @@ def index():
     return "Gesture Recognition Server Running"
 
 if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=5000, use_reloader=False)
+    socketio.run(app, host="0.0.0.0", port=5000)
